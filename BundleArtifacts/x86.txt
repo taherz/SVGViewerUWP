@@ -1,0 +1,6 @@
+MainPackage=C:\Users\taher\OneDrive\MyApp\SVGViewerUWP\bin\x86\Release\SVGViewer_1.0.1.0_x86.appx
+SymbolPackage=C:\Users\taher\OneDrive\MyApp\SVGViewerUWP\AppPackages\SVGViewer_1.0.1.0_Test\SVGViewer_1.0.1.0_x86.appxsym
+ResourcePack=C:\Users\taher\OneDrive\MyApp\SVGViewerUWP\bin\x86\Release\SVGViewer_1.0.1.0_scale-100.appx
+ResourcePack=C:\Users\taher\OneDrive\MyApp\SVGViewerUWP\bin\x86\Release\SVGViewer_1.0.1.0_scale-125.appx
+ResourcePack=C:\Users\taher\OneDrive\MyApp\SVGViewerUWP\bin\x86\Release\SVGViewer_1.0.1.0_scale-150.appx
+ResourcePack=C:\Users\taher\OneDrive\MyApp\SVGViewerUWP\bin\x86\Release\SVGViewer_1.0.1.0_scale-400.appx

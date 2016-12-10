@@ -1,29 +1,16 @@
 ﻿using Mntone.SvgForXaml;
-using Mntone.SvgForXaml.Primitives;
-using Mntone.SvgForXaml.Shapes;
 using Mntone.SvgForXaml.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Data.Xml.Dom;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -37,12 +24,15 @@ namespace SVGViewer
         public MainPage()
         {
             this.InitializeComponent();
+            Count.Text = "0";
         }
 
         List<SvgFileModel> SvgList = new List<SvgFileModel>();
 
         private async Task LoadSvgFromFolder(bool isLoadFile)
         {
+            Count.Text = "0";
+            DragAndDrop.Visibility = Visibility.Collapsed;
             Preogress.Visibility = Visibility.Visible;
             StorageFolder folder = null;
             IReadOnlyList<StorageFile> files = null;
@@ -116,9 +106,15 @@ namespace SVGViewer
                 }
 
                 if (SvgList.Count > 0)
+                {
                     svgGrid.ItemsSource = SvgList;
+                    Count.Text = SvgList.Count.ToString();
+                }
                 else
+                {
                     await ShowOkMessageAsync("error", "path folder does not contain Svg!!");
+                    DragAndDrop.Visibility = Visibility.Visible;
+                }
             }
             catch (Exception ex)
             {
@@ -144,28 +140,6 @@ namespace SVGViewer
             await LoadSvgFromFolder(true);
         }
 
-        private async void SvgImage_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            try
-            {
-                Debug.WriteLine(((sender as SvgImage).DataContext as SvgFileModel).SvgPath);
-                var dataPackage = new DataPackage();
-
-                var file = ((sender as SvgImage).DataContext as SvgFileModel).SvgFile;
-
-                List<IStorageItem> storageItems = new List<IStorageItem>();
-                storageItems.Add(file);
-                dataPackage.SetStorageItems(storageItems);
-                dataPackage.RequestedOperation = DataPackageOperation.Copy;
-                Clipboard.SetContent(dataPackage);
-                await ShowOkMessageAsync("Copy Svg", file.DisplayName + " has been coppied to clipboard successfully.");
-            }
-            catch (Exception ex)
-            {
-                await ShowOkMessageAsync("error", ex.Message);
-            }
-        }
-
         private void svgGrid_DragOver(object sender, DragEventArgs e)
         {
             e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
@@ -174,54 +148,103 @@ namespace SVGViewer
         private async void svgGrid_DropAsync(object sender, DragEventArgs e)
         {
             svgGrid.ItemsSource = null;
+            DragAndDrop.Visibility = Visibility.Collapsed;
             Preogress.Visibility = Visibility.Visible;
             try
             {
                 if (e.DataView.Contains(StandardDataFormats.StorageItems))
                 {
-                    dynamic files;
+                    List<StorageFile> files = new List<StorageFile>();
+                    List<StorageFolder> folders = new List<StorageFolder>();
+                    SvgList = new List<SvgFileModel>();
+                    Count.Text = "0";
+
                     var storageItems = await e.DataView.GetStorageItemsAsync();
 
-                    if (storageItems[0].IsOfType(StorageItemTypes.Folder))
+                    foreach (var item in storageItems)
                     {
-                        files = await (storageItems[0] as StorageFolder).GetFilesAsync();
-                    }
-                    else
-                    {
-                        files = storageItems;
-                    }
-
-
-                    SvgList = new List<SvgFileModel>();
-                    foreach (StorageFile file in files)
-                    {
-                        try
+                        if (item.IsOfType(StorageItemTypes.Folder))
                         {
-                            if (file.Path.EndsWith(".svg"))
-                            {
-                                SvgFileModel svg = new SvgFileModel();
-                                svg.SvgFile = file;
-                                XmlDocument xmlDoc = await XmlDocument.LoadFromFileAsync(file);
-                                //xmlDoc = FillSvg(xmlDoc, "AAAAAA");
-                                SvgDocument svgDoc = SvgDocument.Parse(xmlDoc);
-
-                                svg.Svg = svgDoc;
-                                svg.SvgPath = file.Path;
-                                SvgList.Add(svg);
-                            }
-                            //else
-                            //    await ShowOkMessageAsync("error", "dropped item is not Svg!!");
+                            folders.Add((item as StorageFolder));
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            //await ShowOkMessageAsync("error", "dropped item is recognized!!");
+                            files.Add((item as StorageFile));
+                        }
+                    }
+
+                    if (folders.Count > 0)
+                    {
+                        foreach(var folder in folders)
+                        {
+                            var items = await folder.GetFilesAsync();
+                            if (items.Count > 0)
+                            {
+                                foreach (var file in items)
+                                {
+                                    try
+                                    {
+                                        if (file.Path.EndsWith(".svg"))
+                                        {
+                                            SvgFileModel svg = new SvgFileModel();
+                                            svg.SvgFile = file;
+                                            XmlDocument xmlDoc = await XmlDocument.LoadFromFileAsync(file);
+                                            SvgDocument svgDoc = SvgDocument.Parse(xmlDoc);
+
+                                            svg.Svg = svgDoc;
+                                            svg.SvgPath = file.Path;
+                                            SvgList.Add(svg);
+                                        }
+                                        //else
+                                        //    await ShowOkMessageAsync("error", "dropped item is not Svg!!");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        //await ShowOkMessageAsync("error", "dropped item is recognized!!");
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (files.Count > 0)
+                    {
+                        foreach (StorageFile file in files)
+                        {
+                            try
+                            {
+                                if (file.Path.EndsWith(".svg"))
+                                {
+                                    SvgFileModel svg = new SvgFileModel();
+                                    svg.SvgFile = file;
+                                    XmlDocument xmlDoc = await XmlDocument.LoadFromFileAsync(file);
+                                    SvgDocument svgDoc = SvgDocument.Parse(xmlDoc);
+
+                                    svg.Svg = svgDoc;
+                                    svg.SvgPath = file.Path;
+                                    SvgList.Add(svg);
+                                }
+                                //else
+                                //    await ShowOkMessageAsync("error", "dropped item is not Svg!!");
+                            }
+                            catch (Exception ex)
+                            {
+                                //await ShowOkMessageAsync("error", "dropped item is recognized!!");
+                            }
                         }
                     }
 
                     if (SvgList.Count > 0)
+                    {
                         svgGrid.ItemsSource = SvgList;
+                        Count.Text = SvgList.Count.ToString();
+                        FolderPath.Text = SvgList[0].SvgFile.Provider.DisplayName;
+                    }
                     else
+                    {
                         await ShowOkMessageAsync("error", "the dropped folder/files do not contain Svg!!");
+                        DragAndDrop.Visibility = Visibility.Visible;
+                    }
                 }
             }
             catch (Exception ex)
@@ -254,6 +277,46 @@ namespace SVGViewer
         private void Cd_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             cd.Hide();
+        }
+
+        private async void SvgImage_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            try
+            {
+                Debug.WriteLine(((sender as SvgImage).DataContext as SvgFileModel).SvgPath);
+                var dataPackage = new DataPackage();
+
+                var file = ((sender as SvgImage).DataContext as SvgFileModel).SvgFile;
+
+                List<IStorageItem> storageItems = new List<IStorageItem>();
+                storageItems.Add(file);
+                dataPackage.SetStorageItems(storageItems);
+                dataPackage.RequestedOperation = DataPackageOperation.Copy;
+                Clipboard.SetContent(dataPackage);
+                await ShowOkMessageAsync("Copy Svg", file.DisplayName + " has been coppied to clipboard successfully.");
+            }
+            catch (Exception ex)
+            {
+                await ShowOkMessageAsync("error", ex.Message);
+            }
+        }
+
+        private async void Email_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var dataPackage = new DataPackage();
+            dataPackage.SetText("taher.alzahrani@outlook.com");
+            dataPackage.RequestedOperation = DataPackageOperation.Copy;
+            Clipboard.SetContent(dataPackage);
+            await ShowOkMessageAsync("Copy", "my email copied to clipboard");
+        }
+
+        private async void GitHub_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var dataPackage = new DataPackage();
+            dataPackage.SetText("https://github.com/taherz/SVGViewerUWP/");
+            dataPackage.RequestedOperation = DataPackageOperation.Copy;
+            Clipboard.SetContent(dataPackage);
+            await ShowOkMessageAsync("Copy", "App repo link copied to clipboard");
         }
     }
 

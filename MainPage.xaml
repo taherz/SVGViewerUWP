@@ -9,12 +9,13 @@
     mc:Ignorable="d">
 
     <Grid Background="White" >
-        <Grid Margin="40">
+        <Grid Margin="40,40,40,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <TextBlock Text="SVG Viewer" Style="{StaticResource HeaderTextBlockStyle}" Margin="0,0,0,20"/>
             <Grid Grid.Row="1">
@@ -31,6 +32,15 @@
                 </StackPanel>
             </Grid>
             <Grid Grid.Row="2" Margin="-20,20" BorderBrush="Gray" BorderThickness="1"/>
+            <StackPanel Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-16,0,0">
+                <TextBlock Style="{StaticResource BodyTextBlockStyle}" FontSize="12">
+                    <Run Text="Count:" />
+                    <Run x:Name="Count" />
+                </TextBlock>
+            </StackPanel>
+            <StackPanel x:Name="DragAndDrop" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="Drag and Drop" Style="{StaticResource HeaderTextBlockStyle}" />
+            </StackPanel>
             <GridView Grid.Row="3" x:Name="svgGrid" Margin="20,10" AllowDrop="True" DragOver="svgGrid_DragOver" Drop="svgGrid_DropAsync">
                 <GridView.ItemTemplate>
                     <DataTemplate>
@@ -40,6 +50,13 @@
                     </DataTemplate>
                 </GridView.ItemTemplate>
             </GridView>
+            
+            <StackPanel Grid.Row="4" >
+                <Grid Grid.Row="2" Margin="-20,10" BorderBrush="Gray" BorderThickness="1"/>
+                <TextBlock Text="By: Taher Alzahrani" Style="{StaticResource BaseTextBlockStyle}"/>
+                <TextBlock x:Name="Email" Text="Email: taher.alzahrani@outlook.com" Style="{StaticResource BaseTextBlockStyle}" Tapped="Email_Tapped"/>
+                <TextBlock x:Name="GitHub" Text="GitHub: https://github.com/taherz/SVGViewerUWP/" Style="{StaticResource BaseTextBlockStyle}" Tapped="GitHub_Tapped"/>
+            </StackPanel>
         </Grid>
         <ProgressRing x:Name="Preogress" IsActive="True" Visibility="Collapsed" Width="100" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center"/>
     </Grid>
