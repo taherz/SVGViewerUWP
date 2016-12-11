@@ -3,6 +3,7 @@ using Mntone.SvgForXaml.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Data.Xml.Dom;
@@ -57,9 +58,7 @@ namespace SVGViewer
                         {
                             SvgFileModel svg = new SvgFileModel();
                             svg.SvgFile = pickedFile;
-                            var xmlDoc = await XmlDocument.LoadFromFileAsync(pickedFile);
-                            var svgDoc = SvgDocument.Parse(xmlDoc);
-                            svg.Svg = svgDoc;
+                            svg.Svg = await FileToSvgDoc(pickedFile);
                             svg.SvgPath = pickedFile.Path;
                             SvgList.Add(svg);
                             FolderPath.Text = pickedFile.Path;
@@ -92,9 +91,7 @@ namespace SVGViewer
                         {
                             SvgFileModel svg = new SvgFileModel();
                             svg.SvgFile = file;
-                            var xmlDoc = await XmlDocument.LoadFromFileAsync(file);
-                            var svgDoc = SvgDocument.Parse(xmlDoc);
-                            svg.Svg = svgDoc;
+                            svg.Svg = await FileToSvgDoc(file);
                             svg.SvgPath = file.Path;
                             SvgList.Add(svg);
                         }
@@ -188,10 +185,7 @@ namespace SVGViewer
                                         {
                                             SvgFileModel svg = new SvgFileModel();
                                             svg.SvgFile = file;
-                                            XmlDocument xmlDoc = await XmlDocument.LoadFromFileAsync(file);
-                                            SvgDocument svgDoc = SvgDocument.Parse(xmlDoc);
-
-                                            svg.Svg = svgDoc;
+                                            svg.Svg = await FileToSvgDoc(file);
                                             svg.SvgPath = file.Path;
                                             SvgList.Add(svg);
                                         }
@@ -217,10 +211,7 @@ namespace SVGViewer
                                 {
                                     SvgFileModel svg = new SvgFileModel();
                                     svg.SvgFile = file;
-                                    XmlDocument xmlDoc = await XmlDocument.LoadFromFileAsync(file);
-                                    SvgDocument svgDoc = SvgDocument.Parse(xmlDoc);
-
-                                    svg.Svg = svgDoc;
+                                    svg.Svg = await FileToSvgDoc(file);
                                     svg.SvgPath = file.Path;
                                     SvgList.Add(svg);
                                 }
@@ -317,6 +308,27 @@ namespace SVGViewer
             dataPackage.RequestedOperation = DataPackageOperation.Copy;
             Clipboard.SetContent(dataPackage);
             await ShowOkMessageAsync("Copy", "App repo link copied to clipboard");
+        }
+
+        public async Task<byte[]> FileToByteArray(StorageFile file)
+        {
+            Stream stream;
+            byte[] bytes = null;
+            if (file != null)
+            {
+                stream = await file.OpenStreamForReadAsync();
+                bytes = new byte[(int)stream.Length];
+                stream.Read(bytes, 0, (int)stream.Length);
+            }
+
+            return bytes;
+        }
+
+        public async Task<SvgDocument> FileToSvgDoc(StorageFile file)
+        {
+            byte[] fileAsArray = await FileToByteArray(file);
+            SvgDocument svgDoc = SvgDocument.Parse(fileAsArray);
+            return svgDoc;
         }
     }
 
