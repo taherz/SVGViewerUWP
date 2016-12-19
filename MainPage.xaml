@@ -106,6 +106,7 @@
                     <!--<TextBlock x:Name="GitHub" Text="GitHub: https://github.com/taherz/SVGViewerUWP/" Style="{StaticResource BaseTextBlockStyle}" Tapped="GitHub_Tapped" FontSize="12"/>-->
                 </StackPanel>
                 <!--ad-->
+                
             </Grid>
         </Grid>
         <ProgressRing x:Name="Preogress" IsActive="True" Visibility="Collapsed" Width="100" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center"/>

@@ -118,16 +118,17 @@ namespace SVGViewer
 
         void HideSelectedSVG()
         {
+            SelectedSvgGrid.Visibility = Visibility.Collapsed;
             SelectedSvgGrid.Background = new SolidColorBrush(Colors.White);
             backButton.Visibility = Visibility.Collapsed;
             SelectedSvg.Visibility = Visibility.Collapsed;
             controlPanel.Visibility = Visibility.Visible;
             svgGrid.Visibility = Visibility.Visible;
+            noBg.Visibility = Visibility.Visible;
             FileName.Text = "";
             FileSize.Text = "";
             LoadFolder.Visibility = Visibility.Visible;
             LoadFiles.Visibility = Visibility.Visible;
-            noBg.Visibility = Visibility.Visible;
         }
 
        //ad
@@ -192,6 +193,9 @@ namespace SVGViewer
                 catch (Exception ex)
                 {
                     Preogress.Visibility = Visibility.Collapsed;
+                    if (SvgList.Count < 1)
+                        DragAndDrop.Visibility = Visibility.Visible;
+                    return;
                 }
 
                 if (folder == null || files == null)
@@ -238,8 +242,6 @@ namespace SVGViewer
             finally
             {
                 Preogress.Visibility = Visibility.Collapsed;
-                if (SvgList.Count < 1)
-                    DragAndDrop.Visibility = Visibility.Visible;
             }
 
 
