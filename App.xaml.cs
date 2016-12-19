@@ -79,6 +79,19 @@ namespace SVGViewer
             }
         }
 
+        protected override void OnFileActivated(FileActivatedEventArgs args)
+        {
+            // TODO: Handle file activation
+            // The number of files received is args.Files.Size
+            // The name of the first file is args.Files[0].Name
+
+            Frame rootFrame = new Frame();
+            Window.Current.Content = rootFrame;
+            rootFrame.Navigate(typeof(MainPage), args.Files[0]);
+            Window.Current.Activate();
+
+        }
+
         /// <summary>
         /// Invoked when Navigation to a certain page fails
         /// </summary>

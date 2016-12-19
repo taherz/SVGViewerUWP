@@ -7,14 +7,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SVGViewer", "SVGViewer.cspr
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|ARM = Release|ARM
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A516543B-C3EF-4561-858B-C58CDA09F266}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{A516543B-C3EF-4561-858B-C58CDA09F266}.Debug|ARM.ActiveCfg = Debug|ARM
 		{A516543B-C3EF-4561-858B-C58CDA09F266}.Debug|ARM.Build.0 = Debug|ARM
 		{A516543B-C3EF-4561-858B-C58CDA09F266}.Debug|ARM.Deploy.0 = Debug|ARM
@@ -24,6 +27,7 @@ Global
 		{A516543B-C3EF-4561-858B-C58CDA09F266}.Debug|x86.ActiveCfg = Debug|x86
 		{A516543B-C3EF-4561-858B-C58CDA09F266}.Debug|x86.Build.0 = Debug|x86
 		{A516543B-C3EF-4561-858B-C58CDA09F266}.Debug|x86.Deploy.0 = Debug|x86
+		{A516543B-C3EF-4561-858B-C58CDA09F266}.Release|Any CPU.ActiveCfg = Release|x86
 		{A516543B-C3EF-4561-858B-C58CDA09F266}.Release|ARM.ActiveCfg = Release|ARM
 		{A516543B-C3EF-4561-858B-C58CDA09F266}.Release|ARM.Build.0 = Release|ARM
 		{A516543B-C3EF-4561-858B-C58CDA09F266}.Release|ARM.Deploy.0 = Release|ARM
